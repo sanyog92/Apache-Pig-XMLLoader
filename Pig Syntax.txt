@@ -1,0 +1,14 @@
+--Register the piggybank jar in Pig
+grunt> register '/usr/lib/pig/piggybank.jar';
+
+--Define a function name for XMLLoader function present in piggybank jar
+grunt> define XMLLoader org.apache.pig.piggybank.storage.XMLLoader();
+
+--Load the file into xmldata variable
+grunt> xmldata = load '/piginput/names.xml' USING org.apache.pig.piggybank.storage.XMLLoader('NAMES') as(doc:chararray);
+
+--Parse XML data present in variable xmldata to data variable
+grunt>  data = foreach xmldata GENERATE FLATTEN(REGEX_EXTRACT_ALL(doc,'<NAMES>\\s*<NAME>(.*)</NAME>\\s*<JOB>(.*)</JOB>\\s*<COUNTRY>(.*)</COUNTRY>\\s*<SALARY>(.*)</SALARY>\\s*<CURRENCY>(.*)</CURRENCY>\\s*</NAMES>')) AS (name:chararray, job:chararray, country:chararray, salary:float, currency:int);
+
+--dump data
+grunt>  dump data;
